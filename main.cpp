@@ -1,9 +1,10 @@
-﻿#include <vector>
+#include <vector>
 #include <thread>
 #include <chrono>
 #include <cmath>
 #include <string>
 #include <filesystem>
+#include <fstream>
 #include <SFML/Graphics.hpp>
 #include "maze_generation.h"
 #include "dfs_algorithm.h"
@@ -387,7 +388,24 @@ int main() {
                     auto mp = window.mapPixelToCoords(Mouse::getPosition(window));
                     S.handleMouse(window, mp);
                 }
-                if (S.finishClicked) current = Screen::Stats;
+                if (S.finishClicked) {
+                    current = Screen::Stats;
+                    fs::path file = fs::current_path() / "stats.txt";
+                    bool writeHeader = !fs::exists(file) || fs::file_size(file) == 0;
+                    ofstream ofs(file, ios::app);
+                    if (writeHeader) {
+                        ofs << "rows,columns,dfs_time,dfs_moves,bfs_time,bfs_moves,random_time,random_moves\n";
+                    }
+                    int rows = I.rows;
+                    int cols = I.cols;
+                    long long dfsT = dfs_stats.elapsedMillis;
+                    int dfsM = dfs_stats.totalMoves;
+                    long long bfsT = bfs_stats.elapsedMillis;
+                    int bfsM = bfs_stats.totalMoves;
+                    long long rwT = random_stats.elapsedMillis;
+                    int rwM = random_stats.totalMoves;
+                    ofs << rows << "," << cols << "," << dfsT << "," << dfsM << "," << bfsT << "," << bfsM << "," << rwT << "," << rwM << "\n";
+                }
             }
             else if (current == Screen::Stats) {
                 if (e.type == Event::MouseButtonPressed) {
