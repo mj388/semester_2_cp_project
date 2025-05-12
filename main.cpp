@@ -96,7 +96,7 @@ public:
                 if (cols < 11) {
                     cols = 11;
                 }
-                else if (rows % 2 == 0) {
+                else if (cols % 2 == 0) {
                     cols += 1;
                 }
                 inputComplete = true;
